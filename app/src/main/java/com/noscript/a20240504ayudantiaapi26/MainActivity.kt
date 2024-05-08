@@ -5,10 +5,10 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.noscript.reproductor.AppConstant.Companion.LOG_MAIN_ACTIVITY
 import com.noscript.reproductor.databinding.ActivityMainBinding
 import com.noscript.reproductor.AppConstant.Companion.MEDIA_PLAYER_POSITION
-import com.noscript.reproductor.AppConstant.Companion.LOG_MAIN_ACTIVITY
-import java.io.IOException
+
 
 import java.util.LinkedList
 import java.util.Queue
@@ -22,19 +22,12 @@ class MainActivity : AppCompatActivity() {
      * Cola para mantener los mensajes de Toast en espera.
      */
     private val colaToast: Queue<String> = LinkedList()
-
     private var mediaPlayer: MediaPlayer? = null
-
     private lateinit var binding: ActivityMainBinding
-
     var isPlaying: Boolean = false
-
     private var position: Int = 0
-
     private lateinit var currentSong: Song
-
     private var currentSongIndex: Int = 0
-
 
     /**
      * Método llamado cuando se crea la actividad.
@@ -52,9 +45,6 @@ class MainActivity : AppCompatActivity() {
             position = it.getInt(AppConstant.MEDIA_PLAYER_POSITION)
         }
 
-        // Actualizar la UI con la canción actual
-        updateUiSong()
-
         // Configuración del listener del botón de reproducción/pausa
         binding.playPauseButton.setOnClickListener {
             playOrPauseMusic() // Lógica para reproducir o pausar la música
@@ -64,67 +54,54 @@ class MainActivity : AppCompatActivity() {
         binding.btnSiguiente.setOnClickListener {
             playNextSong() // Lógica para reproducir la siguiente canción
         }
+
         binding.btnAnterior.setOnClickListener {
             playPreviousSong() // Lógica para reproducir la siguiente canción
         }
 
         // Inicializa el MediaPlayer con el archivo de audio de la primera canción
         mediaPlayer = MediaPlayer.create(this, currentSong.audioResId)
+
+        // Configuración del listener de la ProgressBar
+        setOnSeekBarChangeListener()
     }
 
 
     /**
      * Método llamado cuando la actividad se vuelve visible para el usuario.
      */
-
     override fun onStart() {
         super.onStart()
-        // Registro del inicio de la actividad
-        Log.i("MainActivityReproductor", "onStart")
-        // Agrega un mensaje a la cola de Toast
+        Log.i(LOG_MAIN_ACTIVITY, "onStart")
         agregarACola("onStart")
-        // Muestra el siguiente mensaje de Toast en la cola
         mostrarSiguienteToast()
-        // Inicia la reproducción de música
-        if(isPlaying)
+        if (isPlaying)
             mediaPlayer?.start()
-        // Inicializa el MediaPlayer con el archivo de audio en res/raw
         mediaPlayer = MediaPlayer.create(this, currentSong.audioResId)
-
     }
-
-
-
-
-
-
 
     /**
      * Método llamado cuando la actividad vuelve a estar en primer plano.
      */
     override fun onResume() {
         super.onResume()
-        // Registro de la reanudación de la actividad
-        Log.i("MainActivityReproductor", "onResume")
-        // Agrega un mensaje a la cola de Toast
+        Log.i(LOG_MAIN_ACTIVITY, "onResume")
         agregarACola("onResume")
-        // Muestra el siguiente mensaje de Toast en la cola
         mostrarSiguienteToast()
-        // Reanuda la reproducción de música
         mediaPlayer?.seekTo(position)
-
-        if(isPlaying){
+        if (isPlaying) {
             mediaPlayer?.start()
-            isPlaying=!isPlaying
+            isPlaying = !isPlaying
         }
+        updateProgressBar()
     }
 
     /**
      * Método llamado cuando otra actividad viene a primer plano.
      */
+
     override fun onPause() {
         super.onPause()
-        // Pausa la reproducción de música cuando la actividad está en pausa
         isPlaying = false
         if (mediaPlayer != null) {
             position = mediaPlayer?.currentPosition!!
@@ -151,11 +128,8 @@ class MainActivity : AppCompatActivity() {
      */
     override fun onRestart() {
         super.onRestart()
-        // Registro del reinicio de la actividad
-        Log.i("MainActivityReproductor", "onRestart")
-        // Agrega un mensaje a la cola de Toast
+        Log.i(LOG_MAIN_ACTIVITY, "onRestart")
         agregarACola("onRestart")
-        // Muestra el siguiente mensaje de Toast en la cola
         mostrarSiguienteToast()
     }
 
@@ -164,11 +138,8 @@ class MainActivity : AppCompatActivity() {
      */
     override fun onDestroy() {
         super.onDestroy()
-        // Registro de la destrucción de la actividad
-        Log.i("MainActivityReproductor", "onDestroy")
-        // Agrega un mensaje a la cola de Toast
+        Log.i(LOG_MAIN_ACTIVITY, "onDestroy")
         agregarACola("onDestroy")
-        // Muestra el siguiente mensaje de Toast en la cola
         mostrarSiguienteToast()
     }
 
@@ -193,37 +164,20 @@ class MainActivity : AppCompatActivity() {
     /**
      * Método que gestiona la reproducción o pausa de música.
      */
-    private fun playOrNotPLayMusic() {
+    private fun playOrPauseMusic() {
         if (isPlaying) {
-            // Pausa la música si se está reproduciendo
             mediaPlayer?.pause()
-            isPlaying = false
-            agregarACola("Pausado")
         } else {
-            // Reproduce la música si se está pausada
             mediaPlayer?.start()
-            isPlaying = true
-            agregarACola("Reproduciendo")
         }
-        // Actualiza la vista del reproductor de música
-        updateViewMediaPlayer()
+        isPlaying = !isPlaying
+        updateUiSong()
     }
 
     /**
      * Actualiza la vista del reproductor de música.
      */
-    private fun updateViewMediaPlayer() {
-        if (isPlaying) {
-            // Actualiza el texto del botón de reproducción y el título cuando se está reproduciendo música
-            binding.playPauseButton.text = "Pause"
-            binding.titleTextView.text = "Reproduciendo people are awesome"
-        } else {
-            // Actualiza el texto del botón de reproducción y el título cuando se está pausando la música
-            binding.playPauseButton.text = "Play"
-            binding.titleTextView.text = "Pausado people are awesome"
 
-        }
-    }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
@@ -237,13 +191,6 @@ class MainActivity : AppCompatActivity() {
         updatePlayPauseButton()
     }
 
-    private fun playOrPauseMusic() {
-        if (isPlaying) {
-            mediaPlayer?.pause()
-        }
-        isPlaying = !isPlaying
-        updatePlayPauseButton()
-    }
 
     private fun updatePlayPauseButton() {
         binding.playPauseButton.text = if (isPlaying) "Pausa" else "Reproducir"
@@ -272,4 +219,18 @@ class MainActivity : AppCompatActivity() {
         isPlaying = true
         updateUiSong()
     }
+    private fun updateProgressBar() {
+        val totalDuration = mediaPlayer?.duration ?: 0
+        val currentPosition = mediaPlayer?.currentPosition ?: 0
+        binding.progressBar.max = totalDuration
+        binding.progressBar.progress = currentPosition
+    }
+    private fun seekTo(progress: Int) {
+        mediaPlayer?.seekTo(progress)
+    }
+
+}
+
+private fun setOnSeekBarChangeListener() {
+
 }

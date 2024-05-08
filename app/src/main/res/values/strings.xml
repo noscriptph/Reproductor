@@ -1,7 +1,7 @@
 <resources>
-    <string name="app_name">20240504 ayudantia API26</string>
+    <string name="app_name">Reproductor</string>
     <string name="siguiente"><![CDATA[>]]></string>
     <string name="anterior"><![CDATA[<]]></string>
-    <string name="play">Play</string>
+    <string name="play">Reproducir</string>
     <string name="caratula">caratula</string>
 </resources>
