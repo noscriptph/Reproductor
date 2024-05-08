@@ -1,16 +1,17 @@
 package com.noscript.reproductor
 
-
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.noscript.reproductor.databinding.ActivityMainBinding
-import java.util.LinkedList
-import java.util.Queue
 import com.noscript.reproductor.AppConstant.Companion.MEDIA_PLAYER_POSITION
 import com.noscript.reproductor.AppConstant.Companion.LOG_MAIN_ACTIVITY
+import java.io.IOException
+
+import java.util.LinkedList
+import java.util.Queue
 
 /**
  * Esta clase representa la actividad principal de la aplicación.
@@ -51,7 +52,8 @@ class MainActivity : AppCompatActivity() {
             position = it.getInt(AppConstant.MEDIA_PLAYER_POSITION)
         }
 
-        updateUiSong() // Actualizar la UI con la canción actual
+        // Actualizar la UI con la canción actual
+        updateUiSong()
 
         // Configuración del listener del botón de reproducción/pausa
         binding.playPauseButton.setOnClickListener {
@@ -65,11 +67,16 @@ class MainActivity : AppCompatActivity() {
         binding.btnAnterior.setOnClickListener {
             playPreviousSong() // Lógica para reproducir la siguiente canción
         }
+
+        // Inicializa el MediaPlayer con el archivo de audio de la primera canción
+        mediaPlayer = MediaPlayer.create(this, currentSong.audioResId)
     }
+
 
     /**
      * Método llamado cuando la actividad se vuelve visible para el usuario.
      */
+
     override fun onStart() {
         super.onStart()
         // Registro del inicio de la actividad
@@ -78,12 +85,19 @@ class MainActivity : AppCompatActivity() {
         agregarACola("onStart")
         // Muestra el siguiente mensaje de Toast en la cola
         mostrarSiguienteToast()
-        // Inicializa el MediaPlayer con el archivo de audio en res/raw
-        mediaPlayer = MediaPlayer.create(this, R.raw.peopleareawesome)
         // Inicia la reproducción de música
         if(isPlaying)
             mediaPlayer?.start()
+        // Inicializa el MediaPlayer con el archivo de audio en res/raw
+        mediaPlayer = MediaPlayer.create(this, currentSong.audioResId)
+
     }
+
+
+
+
+
+
 
     /**
      * Método llamado cuando la actividad vuelve a estar en primer plano.
