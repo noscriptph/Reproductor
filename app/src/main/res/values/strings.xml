@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">20240504 ayudantia API26</string>
+    <string name="siguiente"><![CDATA[>]]></string>
+    <string name="anterior"><![CDATA[<]]></string>
+    <string name="play">Play</string>
+    <string name="caratula">caratula</string>
+</resources>
