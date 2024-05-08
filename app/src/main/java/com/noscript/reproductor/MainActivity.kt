@@ -1,33 +1,30 @@
+package com.noscript.reproductor
+
+import android.content.res.Configuration
 import android.media.MediaPlayer
 import android.os.Bundle
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.noscript.reproductor.databinding.ActivityMainBinding
 
 import android.os.Handler
+import android.os.PersistableBundle
 import android.widget.SeekBar
-import com.noscript.reproductor.AppConstant
-import com.noscript.reproductor.Song
-
-import java.util.LinkedList
-import java.util.Queue
 
 class MainActivity : AppCompatActivity() {
-    private val colaToast: Queue<String> = LinkedList()
     private var mediaPlayer: MediaPlayer? = null
     private lateinit var binding: ActivityMainBinding
-    var isPlaying: Boolean = false
+    private var isPlaying: Boolean = false
     private var position: Int = 0
     private lateinit var currentSong: Song
     private var currentSongIndex: Int = 0
     private val handler = Handler()
 
-    private val updateProgressAction = object : Runnable {
+    /*private val updateProgressAction = object : Runnable {
         override fun run() {
             updateProgressBar()
             handler.postDelayed(this, PROGRESS_UPDATE_INTERVAL)
         }
-    }
+    }*/
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -54,13 +51,13 @@ class MainActivity : AppCompatActivity() {
 
         mediaPlayer = MediaPlayer.create(this, currentSong.audioResId)
 
-        setOnSeekBarChangeListener()
+       // setOnSeekBarChangeListener()
 
     }
 
     override fun onStart() {
         super.onStart()
-        handler.post(updateProgressAction)
+        //handler.post(updateProgressAction)
 
     }
 
@@ -85,18 +82,10 @@ class MainActivity : AppCompatActivity() {
         super.onStop()
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-    }
-
-    private fun agregarACola(mensaje: String) {
-        colaToast.add(mensaje)
-    }
-
-    private fun mostrarSiguienteToast() {
-        if (!colaToast.isEmpty()) {
-            Toast.makeText(this, colaToast.poll(), Toast.LENGTH_SHORT).show()
-        }
+    override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle) {
+        super.onSaveInstanceState(outState, outPersistentState)
+        updateUiSong()
+        updatePlayPauseButton()
     }
 
     private fun playOrPauseMusic() {
@@ -152,31 +141,35 @@ class MainActivity : AppCompatActivity() {
         mediaPlayer?.seekTo(progress)
     }
 
-    private fun setOnSeekBarChangeListener() {
+    /* private fun setOnSeekBarChangeListener() {
 
-        // Configurar el listener de la ProgressBar
-        binding.progressBar.setProgress(updateProgressBar(), true) {
-            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                // Manejar el cambio de progreso en la ProgressBar
-                if (fromUser) {
-                    // El cambio de progreso fue causado por el usuario, por lo que se debe cambiar la posición de reproducción
-                    seekTo(progress)
-                }
-            }
+         // Configurar el listener de la ProgressBar
+         binding.progressBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener) {
+             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
+                 // Manejar el cambio de progreso en la ProgressBar
+                 if (fromUser) {
+                     // El cambio de progreso fue causado por el usuario, por lo que se debe cambiar la posición de reproducción
+                     seekTo(progress)
+                 }
+             }
 
-            override fun onStartTrackingTouch(seekBar: SeekBar?) {
-                // No es necesario implementar nada aquí
-            }
+             override fun onStartTrackingTouch(seekBar: SeekBar?) {
+                 // No es necesario implementar nada aquí
+             }
 
-            override fun onStopTrackingTouch(seekBar: SeekBar?) {
-                // No es necesario implementar nada aquí
-            }
-        })
-    }
+             override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                 // No es necesario implementar nada aquí
+             }
+         }
+     }
 
-    companion object {
-        private const val PROGRESS_UPDATE_INTERVAL = 1000L // Intervalo de actualización de la ProgressBar (en milisegundos)
-    }
+     companion object {
+         private const val PROGRESS_UPDATE_INTERVAL = 1000L // Intervalo de actualización de la ProgressBar (en milisegundos)
+     }
+}*/
+
+
+
 }
 
 

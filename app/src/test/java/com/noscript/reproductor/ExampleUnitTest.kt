@@ -1,4 +1,4 @@
-package com.noscript.a20240504ayudantiaapi26
+package com.noscript.reproductor
 
 import org.junit.Test
 

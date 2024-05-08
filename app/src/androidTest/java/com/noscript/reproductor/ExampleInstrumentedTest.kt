@@ -1,4 +1,4 @@
-package com.noscript.a20240504ayudantiaapi26
+package com.noscript.reproductor
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
